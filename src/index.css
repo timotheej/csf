@@ -1,0 +1,26 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Raleway Variable', 'Raleway', ui-sans-serif, system-ui, sans-serif;
+
+  --color-navy: #00004b;
+  --color-navy-deep: #00005c;
+  --color-brand: #0073e6;
+  --color-brand-dark: #1360ae;
+  --color-blue-light: #eaf1fb;
+  --color-border-default: #e7eaef;
+  --color-card-border: #f2f2f3;
+  --color-subtle: #f3f5f7;
+  --color-page: #f9fafb;
+}
+
+html {
+  font-family: var(--font-sans);
+  font-feature-settings: 'lnum' 1, 'pnum' 1;
+}
+
+body {
+  background-color: var(--color-page);
+  color: var(--color-navy);
+  -webkit-font-smoothing: antialiased;
+}
