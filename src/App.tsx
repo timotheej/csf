@@ -1,4 +1,5 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
+import { useSmartSticky } from './useSmartSticky'
 import {
   DEFAULT_ASSESSMENT,
   OBJECTIVES,
@@ -24,23 +25,10 @@ export default function App() {
   const [assessment, setAssessment] = useState<Assessment>(() => cloneAssessment(DEFAULT_ASSESSMENT))
   const [activeId, setActiveId] = useState<string>(OBJECTIVES[0].id)
 
-  // Sticky sidebar: scrolls with the page, then pins when its bottom reaches
-  // the bottom of the viewport (negative sticky top = sidebar height overflow).
+  // Scroll-aware sticky sidebar (pins bottom scrolling down, top scrolling up).
+  const sidebarWrapperRef = useRef<HTMLDivElement>(null)
   const asideRef = useRef<HTMLElement>(null)
-  const [stickyTop, setStickyTop] = useState(0)
-  useLayoutEffect(() => {
-    const el = asideRef.current
-    if (!el) return
-    const update = () => setStickyTop(Math.min(20, window.innerHeight - el.offsetHeight - 20))
-    update()
-    const observer = new ResizeObserver(update)
-    observer.observe(el)
-    window.addEventListener('resize', update)
-    return () => {
-      observer.disconnect()
-      window.removeEventListener('resize', update)
-    }
-  }, [])
+  useSmartSticky(sidebarWrapperRef, asideRef)
 
   const score = globalScore(assessment)
   const conf = conformity(assessment)
@@ -108,17 +96,15 @@ export default function App() {
 
           {/* Two-column layout */}
           <div className="mt-10 flex gap-4">
-            <aside
-              ref={asideRef}
-              style={{ top: stickyTop }}
-              className="sticky flex w-[316px] shrink-0 flex-col gap-5 self-start"
-            >
+            <div ref={sidebarWrapperRef} className="relative w-[316px] shrink-0">
+              <aside ref={asideRef} className="absolute top-0 left-0 flex w-full flex-col gap-5">
               <CtaCard />
               <ScoreCard score={score} conformity={conf} />
               <RadarCard assessment={assessment} activeId={activeId} />
               <PrivacyCard />
               <CtaCard />
-            </aside>
+              </aside>
+            </div>
 
             <div className="w-px shrink-0 bg-border-default" />
 
